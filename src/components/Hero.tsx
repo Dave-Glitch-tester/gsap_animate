@@ -4,7 +4,7 @@ import { SplitText } from "gsap/all";
 import { useRef } from "react";
 import { useMediaQuery } from "react-responsive";
 function Hero() {
-  const videoRef = useRef<HTMLVideoElement>();
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const isMobile = useMediaQuery({ maxWidth: 767 });
   useGSAP(() => {
@@ -41,7 +41,7 @@ function Hero() {
     const startValue = isMobile ? "top 50%" : "center 60%";
     const endValue = isMobile ? "120% top" : "bottom top";
 
-    let tl = gsap.timeline({
+    const tl = gsap.timeline({
       scrollTrigger: {
         trigger: "video",
         start: startValue,
@@ -51,11 +51,15 @@ function Hero() {
       },
     });
 
-    videoRef.current.onloadedmetadata = () => {
-      tl.to(videoRef.current, {
-        currentTime: videoRef.current.duration,
-      });
-    };
+    if (videoRef.current) {
+      videoRef.current.onloadedmetadata = () => {
+        if (videoRef.current) {
+          tl.to(videoRef.current, {
+            currentTime: videoRef.current.duration,
+          });
+        }
+      };
+    }
   }, []);
 
   return (
